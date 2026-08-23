@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Entrepreneurs;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreEntrepreneurRequest extends FormRequest
+class UpdateEntrepreneurRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,9 +25,8 @@ class StoreEntrepreneurRequest extends FormRequest
         return [
             'fullName' => ['required', 'string', 'max:255'],
             'nationalId' => ['nullable', 'string', 'max:20'],
-            'cellPhoneNumber' => ['required', 'string', 'max:20'],
-            'profilePhotoKey' => ['nullable', 'string', 'max:255'],
-            'userId' => ['required', 'integer', 'exists:users,id', 'unique:entrepreneurs,user_id']
+            'cellPhoneNumber' => ['required', 'string', 'max:20'], 
+            'profilePhotoKey' => ['nullable', 'string', 'max:255']
         ];
     }
 }

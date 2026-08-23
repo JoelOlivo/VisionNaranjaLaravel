@@ -3,10 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreUserRequest;
-use App\Http\Requests\UpdateUserPasswordRequest;
-use App\Http\Requests\UpdateUserRequest;
+use App\Http\Requests\Users\UpdateUserPasswordRequest;
+use App\Http\Requests\Users\UpdateUserRequest;
+use App\Http\Requests\Users\StoreUserAdminRequest;
+use App\Http\Requests\Users\StoreUserEntrepreneurRequest;
+use App\Models\Entrepreneur;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -21,16 +26,43 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreUserRequest $request)
+    public function storeUserAdmin(StoreUserAdminRequest $request)
     {
+        $role = Role::where('name', 'admin')->firstOrFail();
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => $request->password,
-            'role_id' => $request->roleId
+            'role_id' => $role->id
         ]);
 
         return $user;
+    }
+
+    public function storeUserEntrepreneur(StoreUserEntrepreneurRequest $request)
+    {
+        return DB::transaction(function () use ($request)
+        {
+            $role = Role::where('name', 'entrepreneur')->firstOrFail();
+    
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => $request->password,
+                'role_id' => $role->id
+            ]);
+    
+            Entrepreneur::create([
+                'full_name' => $request->fullName,
+                'national_id' => $request->nationalId,
+                'cell_phone_number' => $request->cellPhoneNumber,
+                'profile_photo_key' => $request->profilePhotoKey,
+                'user_id' => $user->id
+            ]);
+
+            return $user;
+        });
     }
 
     /**
